@@ -1,5 +1,5 @@
 #
-# Scheduler 
+# Schedule coursera research exports downloads 
 # Jasper Ginn
 # 07/10/2016
 #
@@ -9,53 +9,28 @@ import requests
 import json
 import datetime
 import time
+import logging
 import courseraresearchexports
 from courseraresearchexports.models.ExportRequest import ExportRequest
 from courseraresearchexports.exports import api
 from courseraresearchexports.exports import utils
 
 '''
-TODO:
-
-Add config file:
-    * Add option to disable logging
-    * log location
-    * Add interval to download tables (days)
-    * Add interval to download clickstreams (days)
-    * Yes/no for downloading clickstreams/tables
-    * ...
-'''
-
-'''
-Simple logger class
-'''
-
-class logger:
-
-	def __init__(self, location):
-		self.location = location
-		self.date = "{}-{}-{}"
-
-	def logMessage(self, loglevel, message):
-		self.loglevel = loglevel
-		self.message = message
-		self.time = time.strftime("%Y-%m-%d %H:%M:%S", localtime())
-		# Write
-		with open(self.location, 'a') as f:
-			f.write("{}	{}	{}".format(self.time, self.loglevel, self.message))
-			f.write("\n")
-
-'''
 Create a request to the API
 '''
 
-class call:
+class coursera:
     
     def __init__(self, course_slug):
         self.course_slug = course_slug
-        self.interval = [datetime.date.today() - datetime.timedelta(days=7 # Change to number of days in config), # If you're running it on friday, you want the results from
-                         datetime.date.today() - datetime.timedelta(days=1)]: # Previous friday to yesterday.]
-        self.folder = os.chdir() + "/data/" + course_slug + "/"
+        self.interval = [datetime.date.today() - datetime.timedelta(days=14), # Change to number of days in config), # If you're running it on friday, you want the results from
+                         datetime.date.today() - datetime.timedelta(days=1)] # Previous friday to yesterday.]
+        self.folder = os.getcwd() + "/data/" + course_slug + "/"
+        
+        # Set up logger
+        logging.basicConfig(filename = "scheduler.log", filemode='a', format='%(asctime)s %(message)s', 
+                            level=logging.INFO)
+        logging.info("Started download for course {}".format(course_slug))
         
     '''
     Retrieve course id based on course slug
@@ -68,8 +43,10 @@ class call:
         url_tmp = base_url + self.course_slug
         # GET
         resp = requests.get(url_tmp)
-        # If not 200, raise error
-        if str(resp) != '<Response [200]>':
+        # If not ok
+        if not resp.ok:
+            # Log event
+            logging.error("Cannot fetch course id ({})".format(self.course_slug))
             raise ValueError("Server returned {}. Check whether course name is correct.".format(str(resp)))
         json_data = resp.json()
         # Get courseID
@@ -95,18 +72,26 @@ class call:
                                         "programming_assignments",
                                         "course_content"]):
                                             
-        # Add log entry --> TODO
+        logging.info("Requesting table data ({})".format(self.course_slug))
         
         # Construct request
         er = ExportRequest(course_id=self.course_id, export_type=export_type, anonymity_level = anonymity_level, 
                            statement_of_purpose = statement_of_purpose, schema_names = schema_names)
         # Fire request
-        ERM = api.post(er)[0]
+        try:
+            ERM = api.post(er)[0]
+        except: # Find out specific error
+            logging.error("Request failed ({})".format(self.course_slug))
+            raise ValueError("Failed request")
         
-        # Add log entry --> TODO
+        logging.info("Request successfull ({})".format(self.course_slug))
         
-        # Add id to self
-        self.id_ = ERM.to_json()['id']
+        # Add info to self
+        vals = ERM.to_json()
+        self.id_ = vals['id']
+        self.type = "TABLE"
+        self.metadata = vals["metadata"]
+        self.schemaNames = vals["schemaNames"]
         
         
     '''
@@ -114,20 +99,27 @@ class call:
     '''
     
     def request_clickstream(self, export_type = "RESEARCH_EVENTING", anonymity_level = "HASHED_IDS_NO_PII", 
-                            statement_of_purpose = "Weekly backup of course data")
+                            statement_of_purpose = "Weekly backup of course data"):
                                             
-        # Add log entry --> TODO
+        logging.info("Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1]))
         
         # Construct request
         er = ExportRequest(course_id=self.course_id, export_type=export_type, anonymity_level = anonymity_level, 
                            statement_of_purpose = statement_of_purpose, interval=self.interval)
         # Fire request
-        ERM = api.post(er)[0]
+        try:
+            ERM = api.post(er)[0]
+        except:
+            logging.error("Request failed ({})".format(self.course_slug))
+            raise ValueError("Failed request")
         
-        # Add log entry --> TODO
+        logging.info("Request successfull ({})".format(self.course_slug))
         
         # Add id to self
-        self.id_ = ERM.to_json()['id']
+        vals = ERM.to_json()
+        self.id_ = vals['id']
+        self.type = "CLICKSTREAM"
+        self.metadata = vals["metadata"]
         
     '''
     Check if download is ready every 10 minutes
@@ -153,47 +145,35 @@ class call:
             else:
                 # This is table (sql) data.
                 return request['download_link']
+        else:
+            logging.error("Unknown status <{}> returned by api".format(request['status']))
+            raise ValueError("Unknown status returned by api")
             
     '''
     Download data 
     '''
     
-    '''
-    MERGE DOWNLOAD_URL INTO DOWNLOAD FUNCTION BELOW!!!
-    '''
-
-    def download_url(url, dest_folder):
-        """
-        Download url to dest_folder/FILENAME, where FILENAME is the last
-        part of the url path.
-        """
-        filename = urlparse(url).path.split('/')[-1]
-        full_filename = os.path.join(dest_folder, filename)
-        response = requests.get(url, stream=True)
-        chunk_size = 1024 * 1024
-        logging.debug('Writing to file: {}'.format(full_filename))
-
-        with open(full_filename, 'wb') as f:
-            for data in tqdm(
-                        iterable=response.iter_content(chunk_size),
-                        total=int(response.headers['Content-length']) / chunk_size,
-                        unit='MB',
-                        desc=filename):
-                f.write(data)
-        return full_filename
-    
     def download(self, link):
         
-        data_folder = os.chdir() + "/data/"
-        
+        data_folder = os.getcwd() + "/data/"
         # Check if 'data' folder exists
         if not os.path.exists(data_folder):
             os.makedirs(data_folder)
-        
         # Check if course slug folder exists in data folder
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
-            
-        # Download file to folder
-        download_url(link, self.folder)
+        
+        logging.info("Downloading file ({})".format(course_slug))
+        
+        resp = utils.download_url(link, self.folder)
+        
+        # Create metadata
+        mt = {"course":course_slug, "course_id":self.course_id, "exportType":self.type,
+              "meta":self.metadata}
+        # Dump metadata in folder
+        with open("{}{}".format(self.folder, 'info.json'), 'w') as metaFile:
+            metaFile.write(json.dumps(mt))
+        
+        # Return
+        return self.folder
         
