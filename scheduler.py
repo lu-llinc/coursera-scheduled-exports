@@ -47,7 +47,7 @@ class coursera:
 
         # Set up logger
         logging.basicConfig(filename = "scheduler.log", filemode='w', format='%(asctime)s %(message)s',
-                            level=logging.INFO)
+                            level=logging.DEBUG)
         logging.info("Started download for course {}".format(course_slug))
 
     '''
