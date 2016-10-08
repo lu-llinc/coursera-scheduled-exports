@@ -1,0 +1,7 @@
+# Crontab jobs
+
+# Run every 2 weeks on Monday --> for tables
+0 6 * * Mon expr `date +\%s` / 604800 \% 2 >/dev/null ||
+
+# Run every week on Thursday --> for clickstreams
+0 6 * * Thu somescript
