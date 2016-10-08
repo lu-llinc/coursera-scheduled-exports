@@ -1,3 +1,4 @@
 *.pyc
 *.log
+courses.txt
 /data/
