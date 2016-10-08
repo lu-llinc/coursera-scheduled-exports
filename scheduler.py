@@ -1,8 +1,10 @@
-#
+#! /usr/bin/env python
+
+'''
 # Schedule coursera research exports downloads 
 # Jasper Ginn
 # 07/10/2016
-#
+'''
 
 import os
 import requests
@@ -23,12 +25,12 @@ class coursera:
     
     def __init__(self, course_slug):
         self.course_slug = course_slug
-        self.interval = [datetime.date.today() - datetime.timedelta(days=14), # Change to number of days in config), # If you're running it on friday, you want the results from
-                         datetime.date.today() - datetime.timedelta(days=1)] # Previous friday to yesterday.]
+        self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)), # If you're running it on friday, you want the results from
+                         str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
         self.folder = os.getcwd() + "/data/" + course_slug + "/"
         
         # Set up logger
-        logging.basicConfig(filename = "scheduler.log", filemode='a', format='%(asctime)s %(message)s', 
+        logging.basicConfig(filename = "scheduler.log", filemode='w', format='%(asctime)s %(message)s', 
                             level=logging.INFO)
         logging.info("Started download for course {}".format(course_slug))
         
@@ -89,10 +91,9 @@ class coursera:
         # Add info to self
         vals = ERM.to_json()
         self.id_ = vals['id']
-        self.type = "TABLE"
+        self.type_ = "TABLE"
         self.metadata = vals["metadata"]
         self.schemaNames = vals["schemaNames"]
-        
         
     '''
     Request clickstream data
@@ -118,7 +119,7 @@ class coursera:
         # Add id to self
         vals = ERM.to_json()
         self.id_ = vals['id']
-        self.type = "CLICKSTREAM"
+        self.type_ = "CLICKSTREAM"
         self.metadata = vals["metadata"]
         
     '''
@@ -167,13 +168,17 @@ class coursera:
         
         resp = utils.download_url(link, self.folder)
         
-        # Create metadata
-        mt = {"course":course_slug, "course_id":self.course_id, "exportType":self.type,
-              "meta":self.metadata}
-        # Dump metadata in folder
-        with open("{}{}".format(self.folder, 'info.json'), 'w') as metaFile:
-            metaFile.write(json.dumps(mt))
-        
         # Return
         return self.folder
         
+    '''
+    Add metadata
+    '''
+    
+    def return_metadata(self):
+        
+        # Create metadata
+        mt = {"course":self.course_slug, "course_id":self.course_id, "exportType":self.type_,
+              "meta":self.metadata, "path":self.folder}
+        # Return
+        return mt
