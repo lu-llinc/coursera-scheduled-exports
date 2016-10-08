@@ -56,13 +56,13 @@ if __name__=="__main__":
         # Check if a filepath
         if os.path.isfile(args.course_slugs):
             raise RuntimeError("You entered a file path but the destination file is not a .txt file.")
-        # Else check if a mispelled filepath
-        elif "/" in args.course_slugs:
-            raise RuntimeError("You entered an invalid file path containing a destination file that is not a .txt file.")
+        elif not os.path.isfile(args.course_slugs):
+            raise RuntimeError("You entered an invalid file path. Additionally, the file path you specified did not contain a .txt file.")
         else:
             courseSlugs = args.course_slugs
 
     print courseSlugs
+
     '''
     Call download class
     '''
