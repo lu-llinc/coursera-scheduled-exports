@@ -17,15 +17,72 @@ limitations under the License.
 '''
 
 '''
-# Call scheduler.py and store.py to download files and store them in a google cloud bucket
+# Call scheduler.py and store.py to download files and store them in a mounted google cloud bucket
 # Jasper Ginn
 # 07/10/2016
 '''
 
+import os
+import datetime
 import argparse
 from scheduler import coursera
 from store import gcloud
-import os
+
+'''
+Wrapper to copy files to mounted gcloud bucket
+'''
+
+def move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type):
+
+    # Init
+    mv = gcloud(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type)
+    # Determine changes
+    mv.changes()
+    # Copy
+    mv.copy()
+
+    # Return TRUE
+    return True
+
+'''
+Wrapper to download files.
+'''
+
+def coursera_download(course_slugs, gcloud_mounting_path, gcloud_bucket_name, request_type, move_to_gcloud = True):
+
+    # For each course slug
+    for course_slug in course_slugs:
+
+        '''
+        Coursera allows at most 1 request per hour. As such, we need to record time of request and wait 60 minutes before we make next request
+        '''
+
+        time_now = datetime.datetime.now()
+
+        # Init
+        c = coursera(course_slug)
+        # Fetch course id
+        c.get_course_id()
+        # Depending on request type, call tables or clickstream
+        if request_type == 'clickstream':
+            c.request_clickstream()
+        else:
+            c.request_schemas()
+        # Make request
+        links = c.status_export(interval = 600)
+        # Download data to destination folder
+        for link in links:
+            c.download(link)
+        # Get metadata
+        meta = c.metadata()
+
+        if move_to_gcloud:
+            # Copy downloaded files to mounted gcloud
+            move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type)
+
+'''
+Run file
+'''
 
 if __name__=="__main__":
 
@@ -56,17 +113,15 @@ if __name__=="__main__":
         # Check if a filepath
         if os.path.isfile(args.course_slugs):
             raise RuntimeError("You entered a file path but the destination file is not a .txt file.")
-        elif not os.path.isfile(args.course_slugs):
+        elif '/' in args.course_slugs:
             raise RuntimeError("You entered an invalid file path. Additionally, the file path you specified did not contain a .txt file.")
+        elif '.' in args.course_slugs:
+            raise RuntimeError("You entered a file type that is currently not supported. Type --help for more information.")
         else:
             courseSlugs = args.course_slugs
 
-    print courseSlugs
-
     '''
-    Call download class
+    Download data for each url
     '''
 
-    '''
-    Call store class
-    '''
+    coursera_download(courseSlugs, )

@@ -148,9 +148,9 @@ class coursera:
         request = api.get(self.id_)[0].to_json()
 
         # If ready, return download link; if not, sleep for interval time
-        if request['status'] == 'IN_PROGRESS':
+        while request['status'] == 'IN_PROGRESS':
             time.sleep(interval) # Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
-        elif request['status'] == 'SUCCESSFUL':
+        if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
             if request['exportType'] == 'RESEARCH_EVENTING':
                 # Create request for links
