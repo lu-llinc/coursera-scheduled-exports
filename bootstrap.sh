@@ -3,10 +3,11 @@
 
 sudo apt-get update
 sudo apt-get -y upgrade
-sudo apt-get install bzip2
+sudo apt-get -y install bzip2 libpq-dev
 # Install anaconda
 wget https://repo.continuum.io/archive/Anaconda2-4.2.0-Linux-x86_64.sh
-sudo bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /opt/anaconda
+sudo bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /usr/bin/anaconda
+#export PATH='${PATH}:/opt/anaconda/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
 source ~/.bashrc
 
 # Install python packages
