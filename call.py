@@ -57,7 +57,7 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
             c.request_clickstream()
         else:
             c.request_schemas()
-        # Make request
+        # Check if ready for download
         links = c.status_export(interval = 600)
         # Download data to destination folder
         for link in links:
