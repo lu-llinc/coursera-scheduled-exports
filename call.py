@@ -36,24 +36,18 @@ Wrapper to download files.
 
 def coursera_download(course_slugs, request_type, location, store_metadata = True):
 
-
     # TODO: create a 'max_requests_hour' variable that governs number of requests we can do each hour.
-
     # For each course slug
     for course_slug in course_slugs:
-
         if not os.path.exists("{}{}".format(location, request_type)):
             os.makedirs("{}{}".format(location, request_type))
         # Check if course slug folder exists in data folder
         if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
             os.makedirs("{}{}/{}".format(location, request_type, course_slug))
-
         '''
         TODO: Coursera allows at most 1 request per hour. As such, we need to record time of request and wait 60 minutes before we make next request
         '''
-
         time_now = datetime.datetime.now()
-
         # Init
         c = coursera(course_slug, tloc)
         # Fetch course id
@@ -65,24 +59,22 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
             c.request_schemas()
         # Make request
         links = c.status_export(interval = 600)
-
         # Download data to destination folder
         for link in links:
-
             # Check if file exists
             filename = urlparse(link).path.split('/')[-1]
             # Create location
-            tloc = "{}/{}/{}/{}".format(location, request_type, course_slugs, filename)
-
+            tloc = "{}/{}/{}/{}".format(location, request_type, course_slug, filename)
             if not os.path.isfile(filepath):
                 logging.info("File {} already exists in target location. Moving on ... ".format(filepath))
-
             c.download(link, tloc)
         # Get metadata and store in file
-
-        # TODO: if user wants to save metadata, store.
-
-        meta = c.metadata()
+        if store_metadata:
+            meta = c.metadata()
+            with open("{}/metadata.txt".format(location), 'a') as inFile:
+                inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
+                                                             meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
+                                                             meta["meta"].encode("utf8"), meta["schemaNames"].encode("utf8")))
 
 '''
 Run file
@@ -92,9 +84,9 @@ if __name__=="__main__":
 
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-export_type","export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
-    parser.add_argument("-slugs","course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
-    parser.add_argument("-l", "location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
+    parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
+    parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
+    parser.add_argument("location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
     parser.add_argument("-m", "--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
     args = parser.parse_args()
 
@@ -123,11 +115,8 @@ if __name__=="__main__":
         args.location = "{}/".format(args.location)
 
     # Create logger here!
-    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log", filemode='a', format='%(asctime)s %(message)s',
+    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(message)s',
                         level=logging.DEBUG)
 
-    '''
-    Download data for each url
-    '''
-
+    # Call
     coursera_download(courseSlugs, args.export_type, args.location, args.save_metadata)
