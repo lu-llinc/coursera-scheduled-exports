@@ -1,7 +1,7 @@
 # Crontab jobs
 
 # Run every 2 weeks on Monday --> for tables
-0 6 * * Mon expr `date +\%s` / 604800 \% 2 >/dev/null ||
+0 6 * * Mon expr `date +\%s` / 604800 \% 2 >/dev/null || /home/Jasper/anaconda/bin/python 'tables' '/home/Jasper/courses.txt' '/home/Jasper/'
 
 # Run every week on Thursday --> for clickstreams
-0 6 * * Thu somescript
+0 6 * * Thu /home/Jasper/anaconda/bin/python 'clickstream' '/home/Jasper/courses.txt' '/home/Jasper/'
