@@ -143,13 +143,15 @@ class coursera:
 
     def status_export(self, interval = 600):
 
+        # Wait for 10 seconds before requesting so that API has time to switch from PENDING to IN_PROGRESS
+        time.sleep(10)
         # Get status of export download
         request = api.get(self.id_)[0].to_json()
 
         # If ready, return download link; if not, sleep for interval time
         while request['status'] == 'IN_PROGRESS' or request['status'] == 'PENDING':
             print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
-            time.sleep(interval) # TODO: Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
+            time.sleep(interval)
             # Check
             request = api.get(self.id_)[0].to_json()
         if request['status'] == 'SUCCESSFUL':

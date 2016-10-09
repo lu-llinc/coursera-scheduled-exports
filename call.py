@@ -23,13 +23,10 @@ limitations under the License.
 '''
 
 import os
-import datetime
 import argparse
 import logging
 from urlparse import urlparse
 from scheduler import coursera
-
-# NOTE: Removed the gcloud package because we can just download straight away to location
 
 '''
 Wrapper to download files.
@@ -37,7 +34,6 @@ Wrapper to download files.
 
 def coursera_download(course_slugs, request_type, location, store_metadata = True):
 
-    # TODO: create a 'max_requests_hour' variable that governs number of requests we can do each hour.
     # For each course slug
     for course_slug in course_slugs:
         if not os.path.exists("{}{}".format(location, request_type)):
@@ -45,8 +41,6 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         # Check if course slug folder exists in data folder
         if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
             os.makedirs("{}{}/{}".format(location, request_type, course_slug))
-
-        time_now = datetime.datetime.now()
         # Init
         c = coursera(course_slug)
         # Fetch course id
@@ -55,10 +49,9 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         # Depending on request type, call tables or clickstream
         if request_type == 'clickstream':
             c.request_clickstream()
-            print 'Successful request'
         else:
             c.request_schemas()
-            print 'Successful request'
+        print 'Successful request'
         # Check if ready for download
         links = c.status_export(interval = 300)
         # Download data to destination folder
