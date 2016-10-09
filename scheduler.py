@@ -45,8 +45,9 @@ class coursera:
                          str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
         self.folder = os.getcwd() + "/data/" + course_slug + "/"
 
-        # Set up logger
-        logging.basicConfig(filename = "scheduler.log", filemode='w', format='%(asctime)s %(message)s',
+        # TODO: Remove logger here!
+        # TODO: Give logger a new name.
+        logging.basicConfig(filename = "scheduler.log", filemode='a', format='%(asctime)s %(message)s',
                             level=logging.DEBUG)
         logging.info("Started download for course {}".format(course_slug))
 
@@ -174,6 +175,9 @@ class coursera:
 
         data_folder = os.getcwd() + "/data/"
         # Check if 'data' folder exists
+
+        # TODO: Remove lines 181-185 to todo 2 in call.py
+
         if not os.path.exists(data_folder):
             os.makedirs(data_folder)
         # Check if course slug folder exists in data folder
