@@ -48,7 +48,7 @@ def move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_ty
 Wrapper to download files.
 '''
 
-def coursera_download(course_slugs, gcloud_mounting_path, gcloud_bucket_name, request_type, move_to_gcloud = True):
+def coursera_download(course_slugs, request_type, gcloud_mounting_path = None, gcloud_bucket_name = None, move_to_gcloud = True):
 
     # For each course slug
     for course_slug in course_slugs:
@@ -89,7 +89,7 @@ if __name__=="__main__":
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
-    parser.add_argument("course_slugs", help="EITHER: A course slug name, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
+    parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
     parser.add_argument("-c", "--copy_to_gcloud", help="Copy the downloaded files to a mounted gcloud bucket. Use the '--mount_location' argument to specify the mounted gcloud directory and '--bucket_name' to specify the bucket name", action="store_true")
     parser.add_argument("-m", "--gcloud_mount_location", help="The directory where the gcloud directory is mounted.", type=str)
     parser.add_argument("-b", "--bucket_name", help="Name of the gcloud bucket.", type=str)
@@ -118,10 +118,10 @@ if __name__=="__main__":
         elif '.' in args.course_slugs:
             raise RuntimeError("You entered a file type that is currently not supported. Type --help for more information.")
         else:
-            courseSlugs = args.course_slugs
+            courseSlugs = [cl.replace(" ", "") for cl in args.course_slugs.split(",")]
 
     '''
     Download data for each url
     '''
 
-    coursera_download(courseSlugs,)
+    #coursera_download(courseSlugs, )
