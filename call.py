@@ -17,7 +17,7 @@ limitations under the License.
 '''
 
 '''
-# Call scheduler.py and store.py to download files and store them in a mounted google cloud bucket
+# Call this script using crontab to download & store coursera export data at scheduled times.
 # Jasper Ginn
 # 07/10/2016
 '''
