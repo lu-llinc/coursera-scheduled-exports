@@ -59,9 +59,10 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
             # Check if file exists
             filename = urlparse(link).path.split('/')[-1]
             # Create location
-            tloc = "{}/{}/{}/{}".format(location, request_type, course_slug, filename)
-            if os.path.isfile(tloc):
+            tloc = "{}{}/{}/".format(location, request_type, course_slug)
+            if os.path.isfile("{}{}".format(tloc, filename)):
                 logging.info("File {} already exists in target location. Moving on ... ".format(filename))
+                continue
             c.download(link, tloc)
         # Get metadata and store in file
         if store_metadata:
