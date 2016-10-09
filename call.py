@@ -26,29 +26,14 @@ import os
 import datetime
 import argparse
 from scheduler import coursera
-from store import gcloud
 
-'''
-Wrapper to copy files to mounted gcloud bucket
-'''
-
-def move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type):
-
-    # Init
-    mv = gcloud(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type)
-    # Determine changes
-    mv.changes()
-    # Copy
-    mv.copy()
-
-    # Return TRUE
-    return True
+# NOTE: Removed the gcloud package because we can just download straight away to location
 
 '''
 Wrapper to download files.
 '''
 
-def coursera_download(course_slugs, request_type, move_to_gcloud = True, gcloud_mounting_path = None, gcloud_bucket_name = None):
+def coursera_download(course_slugs, request_type, location, store_metadata = True):
 
     # For each course slug
     for course_slug in course_slugs:
@@ -70,15 +55,21 @@ def coursera_download(course_slugs, request_type, move_to_gcloud = True, gcloud_
             c.request_schemas()
         # Make request
         links = c.status_export(interval = 600)
+
+        # TODO: Check if folders exist. If they do not, create them!
+
         # Download data to destination folder
         for link in links:
-            c.download(link)
-        # Get metadata
-        meta = c.metadata()
 
-        if move_to_gcloud:
-            # Copy downloaded files to mounted gcloud
-            move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_type)
+            # Check if file exists
+            filename = urlparse(link).path.split('/')[-1]
+            filepath = "{}/{}/{}/{}".format(location, request_type, course_slugs, filename)
+            if not os.path.isfile(filepath):
+                logging.info("File {} already exists in target location. Moving on ... ".format(filepath))
+
+            c.download(link)
+        # Get metadata and store in file
+        meta = c.metadata()
 
 '''
 Run file
@@ -86,24 +77,20 @@ Run file
 
 if __name__=="__main__":
 
+    # TODO: Create logger here!
+
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
-    parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
-    parser.add_argument("-c", "--copy_to_gcloud", help="Copy the downloaded files to a mounted gcloud bucket. Use the '--mount_location' argument to specify the mounted gcloud directory and '--bucket_name' to specify the bucket name", action="store_true")
-    parser.add_argument("-m", "--gcloud_mount_location", help="The directory where the gcloud directory is mounted.", type=str)
-    parser.add_argument("-b", "--bucket_name", help="Name of the gcloud bucket.", type=str)
+    parser.add_argument("-export_type","export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
+    parser.add_argument("-slugs","course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
+    parser.add_argument("-l", "location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
+    parser.add_argument("-m", "--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
     args = parser.parse_args()
 
-    # Check arguments that are supposed to go together
-    if args.copy_to_gcloud:
-        if args.gcloud_mount_location == None or args.bucket_name == None:
-            raise RuntimeError("Please supply the gcloud mount directory and the bucket name.")
-
     # Check directories
-    if args.gcloud_mount_location != None:
-        if not os.path.exists(args.gcloud_mount_location):
-            raise RuntimeError("gcloud bucket is not mounted at path {}. Directory does not exist.".format(args.gcloud_mount_location))
+    if args.location != None:
+        if not os.path.exists(args.location):
+            raise RuntimeError("Directory {} does not exist.".format(args.location))
 
     # Check slugs. If slug is mispelled it will be caught downstream in the coursera class.
     if ".txt" in args.course_slugs:
@@ -124,7 +111,4 @@ if __name__=="__main__":
     Download data for each url
     '''
 
-    if args.copy_to_gcloud:
-        coursera_download(courseSlugs, args.export_type, gcloud_mounting_path = args.gcloud_mount_location, gcloud_bucket_name = args.bucket_name)
-    else:
-        coursera_download(courseSlugs, args.export_type)
+    coursera_download(courseSlugs, args.export_type, args.location, args.save_metadata)
