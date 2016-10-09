@@ -148,7 +148,7 @@ class coursera:
 
         # If pending, wait for it to jump to in progress or successful.
         while request['status'] == 'PENDING':
-            print 'Api returned {} for job {}. Retrying in 10 seconds.'format(request['status'], self.course_slug)
+            print 'Api returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
             time.sleep(10)
             request = api.get(self.id_)[0].to_json()
         # If in progress, check for every interval.
