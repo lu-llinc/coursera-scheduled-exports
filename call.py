@@ -110,8 +110,8 @@ if __name__=="__main__":
         args.location = "{}/".format(args.location)
 
     # Create logger here!
-    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(message)s',
-                        level=logging.DEBUG)
+    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
+                        level=logging.INFO)
 
     # Call
     coursera_download(courseSlugs, args.export_type, args.location, args.save_metadata)
