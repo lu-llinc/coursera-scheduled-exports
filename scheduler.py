@@ -149,6 +149,8 @@ class coursera:
         while request['status'] == 'IN_PROGRESS' or request['status'] == 'PENDING':
             print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
             time.sleep(interval) # TODO: Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
+            # Check 
+            request = api.get(self.id_)[0].to_json()
         if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
             if request['exportType'] == 'RESEARCH_EVENTING':
