@@ -44,9 +44,7 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         # Check if course slug folder exists in data folder
         if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
             os.makedirs("{}{}/{}".format(location, request_type, course_slug))
-        '''
-        TODO: Coursera allows at most 1 request per hour. As such, we need to record time of request and wait 60 minutes before we make next request
-        '''
+
         time_now = datetime.datetime.now()
         # Init
         c = coursera(course_slug)
@@ -58,7 +56,7 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         else:
             c.request_schemas()
         # Check if ready for download
-        links = c.status_export(interval = 600)
+        links = c.status_export(interval = 300)
         # Download data to destination folder
         for link in links:
             # Check if file exists
