@@ -32,45 +32,45 @@ from scheduler import coursera
 Wrapper to download files.
 '''
 
-def coursera_download(course_slugs, request_type, location, store_metadata = True):
+def coursera_download(course_slug, request_type, location, store_metadata = True):
 
-    # For each course slug
-    for course_slug in course_slugs:
-        if not os.path.exists("{}{}".format(location, request_type)):
-            os.makedirs("{}{}".format(location, request_type))
-        # Check if course slug folder exists in data folder
-        if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
-            os.makedirs("{}{}/{}".format(location, request_type, course_slug))
-        # Init
-        c = coursera(course_slug)
-        # Fetch course id
-        c.get_course_id()
+    if not os.path.exists("{}{}".format(location, request_type)):
+        os.makedirs("{}{}".format(location, request_type))
+    # Check if course slug folder exists in data folder
+    if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
+        os.makedirs("{}{}/{}".format(location, request_type, course_slug))
+    # Init
+    c = coursera(course_slug, args.verbose)
+    # Fetch course id
+    c.get_course_id()
+    if args.verbose:
         print 'Sucessfully fetched course ID'
-        # Depending on request type, call tables or clickstream
-        if request_type == 'clickstream':
-            c.request_clickstream()
-        else:
-            c.request_schemas()
+    # Depending on request type, call tables or clickstream
+    if request_type == 'clickstream':
+        c.request_clickstream()
+    else:
+        c.request_schemas()
+    if args.verbose:
         print 'Successful request'
-        # Check if ready for download
-        links = c.status_export(interval = 300)
-        # Download data to destination folder
-        for link in links:
-            # Check if file exists
-            filename = urlparse(link).path.split('/')[-1]
-            # Create location
-            tloc = "{}{}/{}/".format(location, request_type, course_slug)
-            if os.path.isfile("{}{}".format(tloc, filename)):
-                logging.info("File {} already exists in target location. Moving on ... ".format(filename))
-                continue
-            c.download(link, tloc)
-        # Get metadata and store in file
-        if store_metadata:
-            meta = c.metadata()
-            with open("{}/metadata.txt".format(location), 'a') as inFile:
-                inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
-                                                             meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
-                                                             meta["meta"].encode("utf8"), meta["schemaNames"].encode("utf8")))
+    # Check if ready for download
+    links = c.status_export(interval = 300)
+    # Download data to destination folder
+    for link in links:
+        # Check if file exists
+        filename = urlparse(link).path.split('/')[-1]
+        # Create location
+        tloc = "{}{}/{}/".format(location, request_type, course_slug)
+        if os.path.isfile("{}{}".format(tloc, filename)):
+            logging.info("File {} already exists in target location. Moving on ... ".format(filename))
+            continue
+        c.download(link, tloc)
+    # Get metadata and store in file
+    if store_metadata:
+        meta = c.metadata()
+        with open("{}/metadata.txt".format(location), 'a') as inFile:
+            inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
+                                                         meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
+                                                         meta["meta"].encode("utf8"), meta["schemaNames"].encode("utf8")))
 
 '''
 Run file
@@ -84,6 +84,7 @@ if __name__=="__main__":
     parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
     parser.add_argument("location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
     parser.add_argument("-m", "--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
+    parser.add_argument("-v", "--verbose", help="Print verbose messages.", action="store_true")
     args = parser.parse_args()
 
     # Check directories
@@ -115,4 +116,10 @@ if __name__=="__main__":
                         level=logging.INFO)
 
     # Call
-    coursera_download(courseSlugs, args.export_type, args.location, args.save_metadata)
+    for courseSlug in courseSlugs:
+        try:
+            coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
+        except: # TODO: add specific exception
+            if args.verbose:
+                print "An unknown error occurred. Maybe the job failed ... ?"
+            logging.error("An error occurred."")

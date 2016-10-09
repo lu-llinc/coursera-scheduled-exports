@@ -40,8 +40,9 @@ Create a request to the API
 
 class coursera:
 
-    def __init__(self, course_slug):
+    def __init__(self, course_slug, verbose = False):
         self.course_slug = course_slug
+        self.verbose = verbose
 
         logging.info("Started download for course {}".format(course_slug))
 
@@ -148,12 +149,14 @@ class coursera:
 
         # If pending, wait for it to jump to in progress or successful.
         while request['status'] == 'PENDING':
-            print 'Api returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
+            if self.verbose:
+                print 'Api returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
             time.sleep(10)
             request = api.get(self.id_)[0].to_json()
         # If in progress, check for every interval.
         while request['status'] == 'IN_PROGRESS':
-            print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
+            if self.verbose:
+                print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
             time.sleep(interval)
             # Check
             request = api.get(self.id_)[0].to_json()
@@ -178,7 +181,8 @@ class coursera:
 
     def download(self, link, location):
 
-        print "Downloading file from url {}".format(link)
+        if self.verbose:
+            print "Downloading file from url {}".format(link)
         logging.info("Downloading file ({})".format(self.course_slug))
 
         resp = utils.download_url(link, location)
