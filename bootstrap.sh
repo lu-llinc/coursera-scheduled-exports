@@ -3,6 +3,7 @@
 
 sudo apt-get update
 sudo apt-get -y upgrade
+sudo apt-get install bzip2
 # Install anaconda
 wget https://repo.continuum.io/archive/Anaconda2-4.2.0-Linux-x86_64.sh
 sudo bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /opt/anaconda
