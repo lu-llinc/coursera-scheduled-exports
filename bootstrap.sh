@@ -9,4 +9,4 @@ sudo bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /opt/anaconda
 source ~/.bashrc
 
 # Install python packages
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
