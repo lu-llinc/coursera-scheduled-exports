@@ -66,7 +66,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
         c.download(link, tloc)
     # Get metadata and store in file
     if store_metadata:
-        meta = c.metadata()
+        meta = c.return_metadata()
         with open("{}/metadata.txt".format(location), 'a') as inFile:
             inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
                                                          meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
