@@ -72,7 +72,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
         with open("{}/metadata.txt".format(location), 'a') as inFile:
             inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
                                                          meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
-                                                         meta["meta"].encode("utf8"), meta["schemaNames"].encode("utf8")))
+                                                         meta["meta"], meta["schemaNames"]))
 
 '''
 Run file
