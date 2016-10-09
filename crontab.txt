@@ -3,7 +3,7 @@
 # Run every 2 weeks on Monday --> for tables
 # TODO: Add mounted gbucket path.
 # TODO: test -m flag
-0 6 * * Mon expr `date +\%s` / 604800 \% 2 >/dev/null || /home/Jasper/anaconda/bin/python 'tables' '/home/Jasper/courses.txt' '/home/Jasper/'
+0 6 * * Mon expr `date +\%s` / 604800 \% 2 >/dev/null || /home/Jasper/anaconda/bin/python 'tables' '/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/'
 
 # Run every week on Thursday --> for clickstreams
-0 6 * * Thu /home/Jasper/anaconda/bin/python 'clickstream' '/home/Jasper/courses.txt' '/home/Jasper/'
+0 6 * * Thu /home/Jasper/anaconda/bin/python 'clickstream' '/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/'
