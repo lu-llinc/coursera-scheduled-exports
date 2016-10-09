@@ -49,7 +49,7 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         '''
         time_now = datetime.datetime.now()
         # Init
-        c = coursera(course_slug, tloc)
+        c = coursera(course_slug)
         # Fetch course id
         c.get_course_id()
         # Depending on request type, call tables or clickstream
