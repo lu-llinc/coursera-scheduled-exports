@@ -25,6 +25,7 @@ limitations under the License.
 import os
 import argparse
 import logging
+import datetime
 from urlparse import urlparse
 from scheduler import coursera
 
@@ -67,6 +68,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
+        time_now = datetime.datetime.now()
         with open("{}/metadata.txt".format(location), 'a') as inFile:
             inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
                                                          meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
