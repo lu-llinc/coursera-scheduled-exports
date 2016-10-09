@@ -50,11 +50,14 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         c = coursera(course_slug)
         # Fetch course id
         c.get_course_id()
+        print 'Sucessfully fetched course ID'
         # Depending on request type, call tables or clickstream
         if request_type == 'clickstream':
             c.request_clickstream()
+            print 'Successful request'
         else:
             c.request_schemas()
+            print 'Successful request'
         # Check if ready for download
         links = c.status_export(interval = 300)
         # Download data to destination folder

@@ -147,6 +147,7 @@ class coursera:
 
         # If ready, return download link; if not, sleep for interval time
         while request['status'] == 'IN_PROGRESS' or request['status'] == 'PENDING':
+            print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval % 60))
             time.sleep(interval) # TODO: Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
         if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
@@ -170,6 +171,7 @@ class coursera:
 
     def download(self, link, location):
 
+        print "Downloading file from url {}".format(link)
         logging.info("Downloading file ({})".format(course_slug))
 
         resp = utils.download_url(link, location)
