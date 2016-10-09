@@ -30,6 +30,7 @@ import time
 import logging
 import courseraresearchexports
 from courseraresearchexports.models.ExportRequest import ExportRequest
+from courseraresearchexports.models.ClickstreamDownloadLinksRequest import ClickstreamDownloadLinksRequest
 from courseraresearchexports.exports import api
 from courseraresearchexports.exports import utils
 
@@ -149,7 +150,7 @@ class coursera:
         while request['status'] == 'IN_PROGRESS' or request['status'] == 'PENDING':
             print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
             time.sleep(interval) # TODO: Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
-            # Check 
+            # Check
             request = api.get(self.id_)[0].to_json()
         if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
@@ -157,12 +158,11 @@ class coursera:
                 # Create request for links
                 CLL = ClickstreamDownloadLinksRequest(course_id = self.course_id,
                                                       interval = self.interval)
-                # Get links --> add try / except
                 links = api.get_clickstream_download_links(CLL)
                 return links
             else:
                 # This is table (sql) data.
-                return request['download_link']
+                return [request['download_link']]
         else:
             logging.error("Unknown status <{}> returned by api".format(request['status']))
             raise ValueError("Unknown status returned by api")
