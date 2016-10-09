@@ -48,7 +48,14 @@ def move_files(course_slug, gcloud_mounting_path, gcloud_bucket_name, request_ty
 Wrapper to download files.
 '''
 
-def coursera_download(course_slugs, request_type, gcloud_mounting_path = None, gcloud_bucket_name = None, move_to_gcloud = True):
+def coursera_download(course_slugs, request_type, move_to_gcloud = True, gcloud_mounting_path = None, gcloud_bucket_name = None):
+
+    print course_slugs
+    print request_type
+    print move_to_gcloud
+    print gcloud_bucket_name
+    print gcloud_mounting_path
+    return True
 
     # For each course slug
     for course_slug in course_slugs:
@@ -124,4 +131,7 @@ if __name__=="__main__":
     Download data for each url
     '''
 
-    #coursera_download(courseSlugs, )
+    if args.copy_to_gcloud:
+        coursera_download(courseSlugs, args.export_type, gcloud_mounting_path = args.gcloud_mount_location, gcloud_bucket_name = args.bucket_name)
+    else:
+        coursera_download(courseSlugs, args.export_type)
