@@ -115,7 +115,7 @@ if __name__=="__main__":
     # Check slugs. If slug is mispelled it will be caught downstream in the coursera class.
     if ".txt" in args.course_slugs:
         with open(args.course_slugs, 'r') as inFile:
-            courseSlugs = [line.replace("\n", "") for line in inFile]
+            courseSlugs = [line.replace("\n", "").replace(" ", "") for line in inFile]
     else:
         # Check if a filepath
         if os.path.isfile(args.course_slugs):
