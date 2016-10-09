@@ -115,7 +115,7 @@ if __name__=="__main__":
 
     # Create logger here!
     logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
-                        level=logging.INFO)
+                        level=logging.DEBUG)
 
     # Call
     for courseSlug in courseSlugs:
