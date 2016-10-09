@@ -26,6 +26,7 @@ import os
 import datetime
 import argparse
 import logging
+from urlparse import urlparse
 from scheduler import coursera
 
 # NOTE: Removed the gcloud package because we can just download straight away to location
