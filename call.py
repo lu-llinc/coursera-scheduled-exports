@@ -122,4 +122,4 @@ if __name__=="__main__":
         except: # TODO: add specific exception
             if args.verbose:
                 print "An unknown error occurred. Maybe the job failed ... ?"
-            logging.error("An error occurred."")
+            logging.error("An error occurred.")
