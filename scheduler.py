@@ -181,8 +181,6 @@ class coursera:
 
     def download(self, link, location):
 
-        if self.verbose:
-            print "Downloading file from url {}".format(link)
         logging.info("Downloading file ({})".format(self.course_slug))
 
         resp = utils.download_url(link, location)
