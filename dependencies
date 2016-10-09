@@ -1,1 +1,8 @@
-# ADD DEPENDENCIES IN SH SCRIPT
+os
+requests
+json
+datetime
+time
+logging
+courseraresearchexports
+argparse
