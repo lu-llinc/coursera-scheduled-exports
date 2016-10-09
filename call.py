@@ -50,13 +50,6 @@ Wrapper to download files.
 
 def coursera_download(course_slugs, request_type, move_to_gcloud = True, gcloud_mounting_path = None, gcloud_bucket_name = None):
 
-    print course_slugs
-    print request_type
-    print move_to_gcloud
-    print gcloud_bucket_name
-    print gcloud_mounting_path
-    return True
-
     # For each course slug
     for course_slug in course_slugs:
 
