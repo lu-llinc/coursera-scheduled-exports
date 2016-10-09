@@ -124,4 +124,4 @@ if __name__=="__main__":
     Download data for each url
     '''
 
-    coursera_download(courseSlugs, )
+    coursera_download(courseSlugs,)
