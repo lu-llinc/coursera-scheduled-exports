@@ -117,9 +117,4 @@ if __name__=="__main__":
 
     # Call
     for courseSlug in courseSlugs:
-        try:
-            coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
-        except: # TODO: add specific exception
-            if args.verbose:
-                print "An unknown error occurred. Maybe the job failed ... ?"
-            logging.error("An error occurred.")
+        coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
