@@ -25,6 +25,7 @@ limitations under the License.
 import os
 import datetime
 import argparse
+import logging
 from scheduler import coursera
 
 # NOTE: Removed the gcloud package because we can just download straight away to location
@@ -35,17 +36,26 @@ Wrapper to download files.
 
 def coursera_download(course_slugs, request_type, location, store_metadata = True):
 
+
+    # TODO: create a 'max_requests_hour' variable that governs number of requests we can do each hour.
+
     # For each course slug
     for course_slug in course_slugs:
 
+        if not os.path.exists("{}{}".format(location, request_type)):
+            os.makedirs("{}{}".format(location, request_type))
+        # Check if course slug folder exists in data folder
+        if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
+            os.makedirs("{}{}/{}".format(location, request_type, course_slug))
+
         '''
-        Coursera allows at most 1 request per hour. As such, we need to record time of request and wait 60 minutes before we make next request
+        TODO: Coursera allows at most 1 request per hour. As such, we need to record time of request and wait 60 minutes before we make next request
         '''
 
         time_now = datetime.datetime.now()
 
         # Init
-        c = coursera(course_slug)
+        c = coursera(course_slug, tloc)
         # Fetch course id
         c.get_course_id()
         # Depending on request type, call tables or clickstream
@@ -56,19 +66,22 @@ def coursera_download(course_slugs, request_type, location, store_metadata = Tru
         # Make request
         links = c.status_export(interval = 600)
 
-        # TODO: Check if folders exist. If they do not, create them!
-
         # Download data to destination folder
         for link in links:
 
             # Check if file exists
             filename = urlparse(link).path.split('/')[-1]
-            filepath = "{}/{}/{}/{}".format(location, request_type, course_slugs, filename)
+            # Create location
+            tloc = "{}/{}/{}/{}".format(location, request_type, course_slugs, filename)
+
             if not os.path.isfile(filepath):
                 logging.info("File {} already exists in target location. Moving on ... ".format(filepath))
 
-            c.download(link)
+            c.download(link, tloc)
         # Get metadata and store in file
+
+        # TODO: if user wants to save metadata, store.
+
         meta = c.metadata()
 
 '''
@@ -76,8 +89,6 @@ Run file
 '''
 
 if __name__=="__main__":
-
-    # TODO: Create logger here!
 
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
@@ -106,6 +117,14 @@ if __name__=="__main__":
             raise RuntimeError("You entered a file type that is currently not supported. Type --help for more information.")
         else:
             courseSlugs = [cl.replace(" ", "") for cl in args.course_slugs.split(",")]
+
+    # Check if location ends with '/'. If it does not, add.
+    if not args.location.endswith("/"):
+        args.location = "{}/".format(args.location)
+
+    # Create logger here!
+    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log", filemode='a', format='%(asctime)s %(message)s',
+                        level=logging.DEBUG)
 
     '''
     Download data for each url

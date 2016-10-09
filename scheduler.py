@@ -41,14 +41,7 @@ class coursera:
 
     def __init__(self, course_slug):
         self.course_slug = course_slug
-        self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)), # If you're running it on friday, you want the results from
-                         str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
-        self.folder = os.getcwd() + "/data/" + course_slug + "/"
 
-        # TODO: Remove logger here!
-        # TODO: Give logger a new name.
-        logging.basicConfig(filename = "scheduler.log", filemode='a', format='%(asctime)s %(message)s',
-                            level=logging.DEBUG)
         logging.info("Started download for course {}".format(course_slug))
 
     '''
@@ -119,6 +112,9 @@ class coursera:
     def request_clickstream(self, export_type = "RESEARCH_EVENTING", anonymity_level = "HASHED_IDS_NO_PII",
                             statement_of_purpose = "Weekly backup of course data"):
 
+        self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)), # If you're running it on friday, you want the results from
+                    str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
+
         logging.info("Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1]))
 
         # Construct request
@@ -138,6 +134,7 @@ class coursera:
         self.id_ = vals['id']
         self.type_ = "CLICKSTREAM"
         self.metadata = vals["metadata"]
+        self.schemaNames = "NONE"
 
     '''
     Check if download is ready every 10 minutes
@@ -150,7 +147,7 @@ class coursera:
 
         # If ready, return download link; if not, sleep for interval time
         while request['status'] == 'IN_PROGRESS':
-            time.sleep(interval) # Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
+            time.sleep(interval) # TODO: Add a maximum wating time (e.g. ~4 hours). Else, log error and continue with next course
         if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
             if request['exportType'] == 'RESEARCH_EVENTING':
@@ -171,25 +168,14 @@ class coursera:
     Download data
     '''
 
-    def download(self, link):
-
-        data_folder = os.getcwd() + "/data/"
-        # Check if 'data' folder exists
-
-        # TODO: Remove lines 181-185 to todo 2 in call.py
-
-        if not os.path.exists(data_folder):
-            os.makedirs(data_folder)
-        # Check if course slug folder exists in data folder
-        if not os.path.exists(self.folder):
-            os.makedirs(self.folder)
+    def download(self, link, location):
 
         logging.info("Downloading file ({})".format(course_slug))
 
-        resp = utils.download_url(link, self.folder)
+        resp = utils.download_url(link, location)
 
         # Return
-        return self.folder
+        return location
 
     '''
     Add metadata
@@ -199,6 +185,6 @@ class coursera:
 
         # Create metadata
         mt = {"course":self.course_slug, "course_id":self.course_id, "exportType":self.type_,
-              "meta":self.metadata, "path":self.folder}
+              "meta":self.metadata, "schema_names":self.schemaNames}
         # Return
         return mt
