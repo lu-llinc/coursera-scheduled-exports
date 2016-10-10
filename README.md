@@ -38,6 +38,8 @@ The program contains three required arguments and three optional arguments.
 
 ### Optional arguments
 
+  - **--clickstream_days**: When downloading clickstream data, the default is that the program downloads the last 7 days of data. This argument lets you change the number of days to any number higher than or equal to 1.
+  - **--interval**: Input a specific date range over which to download clickstream data. Overrides `clickstream_days` argument. You should format the date range as YYYY-MM-DD.
   - **--save_metadata**: Save request metadata? If true, will be saved in the 'location' directory.
   - **--verbose**: Print verbose messages to the terminal? Useful if you're running the program manually.
   - **--log**: Store a log file containing detailed information? Mostly useful for debugging purposes.
@@ -61,6 +63,20 @@ Or, if you have a `.txt` file containg course slugs:
 ```shell
 python call.py 'tables' '/users/jasper/desktop/courses.txt' '/users/jasper/tmp' --verbose
 ```
+
+You can set a specific interval for clickstream data:
+
+```shell
+python call.py 'clickstream' '/users/jasper/desktop/courses.txt' '/users/jasper/tmp' --interval '2016-09-26' '2016-10-05' --verbose
+```
+
+Or you can override the default (download the past 7 days) with any number larger than or equal to 1:
+
+```shell
+python call.py 'clickstream' '/users/jasper/desktop/courses.txt' '/users/jasper/tmp' --clickstream_days 14 --verbose
+```
+
+### Argument description and help
 
 Execute
 

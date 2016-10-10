@@ -89,7 +89,7 @@ if __name__=="__main__":
     parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
     parser.add_argument("location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
     parser.add_argument("--clickstream_days", help="Optional. When requesting clickstream data, it automatically requests data for the last 7 days. Using this argument, you can change this number to any number you wish.", type=int)
-    parser.add_argument("--interval", nargs=2, metavar = ('FROM', 'TO'), help="Use if you want to download clickstream data for a specific date range. Overrides '--clickstream_days' argument.")
+    parser.add_argument("--interval", nargs=2, metavar = ('FROM', 'TO'), help="Use if you want to download clickstream data for a specific date range. Overrides '--clickstream_days' argument. You should format the date range as YYYY-MM-DD.")
     parser.add_argument("--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Print verbose messages.", action="store_true")
     parser.add_argument("-l","--log", help="Store error log. Will be stored in the 'location' directory.", action="store_true")
