@@ -32,7 +32,7 @@ You should occasionally execute `git pull origin master` to ensure that you're u
 
 ## Usage
 
-The program contains three required arguments and five optional arguments.
+The program contains three required arguments and six optional arguments.
 
 ### Required arguments
 
