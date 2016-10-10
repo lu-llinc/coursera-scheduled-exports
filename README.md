@@ -28,7 +28,7 @@ Please refer to the [courseraresearchexports](https://github.com/coursera/course
 
 ## Usage
 
-The program contains three required arguments and three optional arguments.
+The program contains three required arguments and five optional arguments.
 
 ### Required arguments
 
