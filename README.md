@@ -1,6 +1,6 @@
 # Coursera-scheduled-exports
 
-This project contains a program that wraps around the [courseraresearchexports](https://github.com/coursera/courseraresearchexports) python package. The program allows the user to request data exports for one or multiple courses and download them with a single command. This is useful for those who want to automate data export downloads weekly or biweekly.
+This project contains a program that wraps around the [courseraresearchexports](https://github.com/coursera/courseraresearchexports) python package. The program allows the user to request data exports for one or multiple courses and download them with a single command. This is useful for those who want to automate data export downloads. It also makes it less tedious to download e.g. clickstream data since the program downloads it as soon as the job is finished.
 
 Note that only data coordinators can currently use this program, as it requests full exports including partner-level ids and clickstream data.
 
