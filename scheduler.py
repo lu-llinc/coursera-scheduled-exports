@@ -49,7 +49,7 @@ class coursera:
             logging.info("Started download for course {}".format(course_slug))
 
     '''
-    Check if job with same slug was started in the past 12 hours. If so, notify and resume.
+    Check if job with same slug was started in the past hour. If so, notify and resume.
     '''
 
     def catch_download(self, request_type, threshold = 3600):
