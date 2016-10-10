@@ -46,13 +46,23 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     c.get_course_id()
     if args.verbose:
         print 'Sucessfully fetched course ID'
-    # Depending on request type, call tables or clickstream
-    if request_type == 'clickstream':
-        c.request_clickstream(ndays = args.clickstream_days, interval = args.interval)
+    # Check if a request for this course was made in the past 12 hours
+    check = c.catch_download(request_type = request_type)
+    # If true, skip request
+    if not check or args.force_request:
+        # Depending on request type, call tables or clickstream
+        if request_type == 'clickstream':
+            c.create_cs_interval(ndays = args.clickstream_days, interval = args.interval)
+            c.request_clickstream()
+        else:
+            c.request_schemas()
+            if args.verbose:
+                print 'Successful request'
     else:
-        c.request_schemas()
-    if args.verbose:
-        print 'Successful request'
+        if args.verbose:
+            print "Found '{}' request for {} created in the past hour. Resuming that download ... ".format(request_type, course_slug)
+    # Create cs interval
+    c.create_cs_interval(ndays = args.clickstream_days, interval = args.interval)
     # Check if ready for download
     links = c.status_export(interval = 300)
     # Download data to destination folder
@@ -93,6 +103,7 @@ if __name__=="__main__":
     parser.add_argument("--clickstream_days", help="Optional. When requesting clickstream data, it automatically requests data for the last 7 days. Using this argument, you can change this number to any number you wish.", type=int)
     parser.add_argument("--interval", nargs=2, metavar = ('FROM', 'TO'), help="Use if you want to download clickstream data for a specific date range. Overrides '--clickstream_days' argument. You should format the date range as YYYY-MM-DD.")
     parser.add_argument("--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
+    parser.add_argument("--force_request", help="If you are requesting data for a course for which you have already requested data in the past 12 hours, the program will not create a new request. Instead, it will continue from the previous request. If you add this flag, the program will ignore this and create a new request.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Print verbose messages.", action="store_true")
     parser.add_argument("-l","--log", help="Store error log. Will be stored in the 'location' directory.", action="store_true")
     args = parser.parse_args()

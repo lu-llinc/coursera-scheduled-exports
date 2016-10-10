@@ -49,6 +49,34 @@ class coursera:
             logging.info("Started download for course {}".format(course_slug))
 
     '''
+    Check if job with same slug was started in the past 12 hours. If so, notify and resume.
+    '''
+
+    def catch_download(self, request_type, threshold = 3600):
+        tn = datetime.datetime.now()
+        # Get all jobs
+        AJ = api.get_all()
+        # Filter for those that have been requested > 1 hours
+        FAJ = [A for A in AJ if int((tn - A.created_at).total_seconds()) <= threshold]
+        # Check if any of the results have the course slug and request type
+        Check = any(C.scope_name == self.course_slug and C.export_type_display.lower() == request_type for C in FAJ)
+        # If true, save job id and return true
+        if Check:
+            CID = [C for C in FAJ if C.scope_name == self.course_slug and C.export_type_display.lower() == request_type]
+            CID = CID[len(CID)-1]
+            self.id_ = CID.id
+            # Add metadata
+            self.type_ = CID.export_type_display
+            self.metadata = CID.metadata.to_json()
+            if request_type == "clickstream":
+                self.schemaNames = "NONE"
+            else:
+                self.schemaNames = CID.schema_names
+            return True
+        else:
+            return False
+
+    '''
     Retrieve course id based on course slug
     '''
 
@@ -114,13 +142,10 @@ class coursera:
         self.schemaNames = vals["schemaNames"]
 
     '''
-    Request clickstream data
+    Create interval to download clickstream data
     '''
 
-    def request_clickstream(self, export_type = "RESEARCH_EVENTING", anonymity_level = "HASHED_IDS_NO_PII",
-                            statement_of_purpose = "Weekly backup of course data",
-                            ndays = None, interval = None):
-
+    def create_cs_interval(self, ndays = None, interval = None):
         if ndays != None:
             self.interval = [str(datetime.date.today() - datetime.timedelta(days=ndays)),
                         str(datetime.date.today() - datetime.timedelta(days=1))]
@@ -129,6 +154,13 @@ class coursera:
         else:
             self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)),
                         str(datetime.date.today() - datetime.timedelta(days=1))]
+
+    '''
+    Request clickstream data
+    '''
+
+    def request_clickstream(self, export_type = "RESEARCH_EVENTING", anonymity_level = "HASHED_IDS_NO_PII",
+                            statement_of_purpose = "Weekly backup of course data"):
 
         if self.verbose:
             print "Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1])
