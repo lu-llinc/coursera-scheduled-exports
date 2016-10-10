@@ -14,7 +14,7 @@ sudo apt-get update
 sudo apt-get install gcsfuse
 # Install anaconda
 wget https://repo.continuum.io/archive/Anaconda2-4.2.0-Linux-x86_64.sh
-sudo bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /opt/anaconda
+bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p ~/anaconda
 
 #PATH='${PATH}:/home/Jasper/anaconda/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
 #source ~/.bashrc
