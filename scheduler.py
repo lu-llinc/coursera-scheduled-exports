@@ -221,6 +221,7 @@ class coursera:
                 return links
             else:
                 data = api.get(self.id_)[0]
+                print data
                 # This is table (sql) data.
                 return data.download_link
         elif request['status'] == 'FAILED':
