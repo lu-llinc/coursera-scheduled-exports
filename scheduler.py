@@ -220,7 +220,6 @@ class coursera:
                 links = api.get_clickstream_download_links(CLL)
                 return links
             else:
-                print request["downloadLink"]
                 # This is table (sql) data.
                 return [request["downloadLink"]]
         elif request['status'] == 'FAILED':
