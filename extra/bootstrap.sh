@@ -3,6 +3,9 @@
 # Run to install dependencies on Linux.
 # I use this for a clean VM or VPS.
 
+# Set timezone
+export TZ=Europe/Amsterdam
+
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo apt-get -y install bzip2 libpq-dev
