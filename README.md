@@ -45,6 +45,7 @@ The program contains three required arguments and five optional arguments.
   - **--clickstream_days**: When downloading clickstream data, the default is that the program downloads the last 7 days of data. This argument lets you change the number of days to any number higher than or equal to 1.
   - **--interval**: Input a specific date range over which to download clickstream data. Overrides `clickstream_days` argument. You should format the date range as YYYY-MM-DD.
   - **--save_metadata**: Save request metadata? If true, will be saved in the 'location' directory.
+  - **--force_request**: If you are requesting data for a course for which you have already requested data in the past hour, the program will not create a new request. Instead, it will continue from the previous request. If you add this flag, the program will ignore this and create a new request. Note that this might not work because Coursera allows only 1 request per hour.
   - **--verbose**: Print verbose messages to the terminal? Useful if you're running the program manually.
   - **--log**: Store a log file containing detailed information? Mostly useful for debugging purposes.
 
