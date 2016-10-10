@@ -62,6 +62,14 @@ Or, if you have a `.txt` file containg course slugs:
 python call.py 'tables' '/users/jasper/desktop/courses.txt' '/users/jasper/tmp' --verbose
 ```
 
+Execute
+
+```shell
+python call.py -h
+```
+
+To get an overview and a description of the arguments.
+
 ## Other information
 
 ### Scheduling downloads

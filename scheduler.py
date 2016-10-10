@@ -118,10 +118,20 @@ class coursera:
     '''
 
     def request_clickstream(self, export_type = "RESEARCH_EVENTING", anonymity_level = "HASHED_IDS_NO_PII",
-                            statement_of_purpose = "Weekly backup of course data"):
+                            statement_of_purpose = "Weekly backup of course data",
+                            ndays = None, interval = None):
 
-        self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)), # If you're running it on friday, you want the results from
-                    str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
+        if ndays != None:
+            self.interval = [str(datetime.date.today() - datetime.timedelta(days=ndays)),
+                        str(datetime.date.today() - datetime.timedelta(days=1))]
+        elif interval != None:
+            self.interval = interval
+        else:
+            self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)),
+                        str(datetime.date.today() - datetime.timedelta(days=1))]
+
+        if self.verbose:
+            print "Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1])
 
         if self.log:
             logging.info("Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1]))
