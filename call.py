@@ -80,6 +80,8 @@ Run file
 
 if __name__=="__main__":
 
+    # TODO: Set logging up as optional
+    
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
