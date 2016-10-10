@@ -26,6 +26,10 @@ pip install -r requirements.txt
 
 Please refer to the [courseraresearchexports](https://github.com/coursera/courseraresearchexports) if you encounter any issues installing the `courseraresearchexports` package.
 
+## Updates
+
+You should occasionally execute `git pull origin master` to ensure that you're using the latest version of the program.
+
 ## Usage
 
 The program contains three required arguments and five optional arguments.
