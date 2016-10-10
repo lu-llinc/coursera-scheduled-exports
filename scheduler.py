@@ -222,6 +222,7 @@ class coursera:
             else:
                 data = api.get(self.id_)[0].to_json()
                 print data["downloadLink"]
+                print request["downloadLink"]
                 # This is table (sql) data.
                 return data["downloadLink"]
         elif request['status'] == 'FAILED':
