@@ -223,7 +223,7 @@ class coursera:
                 data = api.get(self.id_)[0]
                 print data.to_json()
                 # This is table (sql) data.
-                return data.download_link
+                return data.downloadLink
         elif request['status'] == 'FAILED':
             if self.log:
                 logging.error("API returned 'job failed'.")
