@@ -41,7 +41,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     if not os.path.exists("{}{}/{}".format(location, request_type, course_slug)):
         os.makedirs("{}{}/{}".format(location, request_type, course_slug))
     # Init
-    c = coursera(course_slug, args.verbose)
+    c = coursera(course_slug, args.verbose, args.log)
     # Fetch course id
     c.get_course_id()
     if args.verbose:
@@ -62,7 +62,8 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
         # Create location
         tloc = "{}{}/{}/".format(location, request_type, course_slug)
         if os.path.isfile("{}{}".format(tloc, filename)):
-            logging.info("File {} already exists in target location. Moving on ... ".format(filename))
+            if args.log:
+                logging.info("File {} already exists in target location. Moving on ... ".format(filename))
             continue
         c.download(link, tloc)
     # Get metadata and store in file
@@ -81,14 +82,15 @@ Run file
 if __name__=="__main__":
 
     # TODO: Set logging up as optional
-    
+
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
     parser.add_argument("course_slugs", help="EITHER: A course slug name or names separated by a comma, OR: Location of a text file (.txt) containing multiple course slug names. Each slug should be placed on a new line.", type=str)
     parser.add_argument("location", help="Base directory in which to store the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
-    parser.add_argument("-m", "--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
+    parser.add_argument("--save_metadata", help="Add the course's metadata to a 'metadata.txt' file saved in the base directory? Defaults to 'True'. If file does not exist, it will be created.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Print verbose messages.", action="store_true")
+    parser.add_argument("--log", help="Store error log. Will be stored in the 'location' directory.", action="store_true")
     args = parser.parse_args()
 
     # Check directories
@@ -116,8 +118,9 @@ if __name__=="__main__":
         args.location = "{}/".format(args.location)
 
     # Create logger here!
-    logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
-                        level=logging.DEBUG)
+    if args.log:
+        logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
+                            level=logging.DEBUG)
 
     # Call
     for courseSlug in courseSlugs:

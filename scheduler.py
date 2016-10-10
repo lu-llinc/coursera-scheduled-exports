@@ -40,11 +40,13 @@ Create a request to the API
 
 class coursera:
 
-    def __init__(self, course_slug, verbose = False):
+    def __init__(self, course_slug, verbose = False, log = False):
         self.course_slug = course_slug
         self.verbose = verbose
+        self.log = log
 
-        logging.info("Started download for course {}".format(course_slug))
+        if self.log:
+            logging.info("Started download for course {}".format(course_slug))
 
     '''
     Retrieve course id based on course slug
@@ -60,7 +62,8 @@ class coursera:
         # If not ok
         if not resp.ok:
             # Log event
-            logging.error("Cannot fetch course id ({})".format(self.course_slug))
+            if self.log:
+                logging.error("Cannot fetch course id ({})".format(self.course_slug))
             raise ValueError("Server returned {}. Check whether course name is correct.".format(str(resp)))
         json_data = resp.json()
         # Get courseID
@@ -86,7 +89,8 @@ class coursera:
                                         "programming_assignments",
                                         "course_content"]):
 
-        logging.info("Requesting table data ({})".format(self.course_slug))
+        if self.log:
+            logging.info("Requesting table data ({})".format(self.course_slug))
 
         # Construct request
         er = ExportRequest(course_id=self.course_id, export_type=export_type, anonymity_level = anonymity_level,
@@ -95,10 +99,12 @@ class coursera:
         try:
             ERM = api.post(er)[0]
         except: # Find out specific error
-            logging.error("Request failed ({})".format(self.course_slug))
+            if self.log:
+                logging.error("Request failed ({})".format(self.course_slug))
             raise ValueError("Failed request")
 
-        logging.info("Request successfull ({})".format(self.course_slug))
+        if self.log:
+            logging.info("Request successfull ({})".format(self.course_slug))
 
         # Add info to self
         vals = ERM.to_json()
@@ -117,7 +123,8 @@ class coursera:
         self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)), # If you're running it on friday, you want the results from
                     str(datetime.date.today() - datetime.timedelta(days=1))] # Previous friday to yesterday.]
 
-        logging.info("Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1]))
+        if self.log:
+            logging.info("Requesting clickstream data ({}) for period {} to {}".format(self.course_slug, self.interval[0], self.interval[1]))
 
         # Construct request
         er = ExportRequest(course_id=self.course_id, export_type=export_type, anonymity_level = anonymity_level,
@@ -126,10 +133,12 @@ class coursera:
         try:
             ERM = api.post(er)[0]
         except:
-            logging.error("Request failed ({})".format(self.course_slug))
+            if self.log:
+                logging.error("Request failed ({})".format(self.course_slug))
             raise ValueError("Failed request")
 
-        logging.info("Request successfull ({})".format(self.course_slug))
+        if self.log:
+            logging.info("Request successfull ({})".format(self.course_slug))
 
         # Add id to self
         vals = ERM.to_json()
@@ -171,8 +180,13 @@ class coursera:
             else:
                 # This is table (sql) data.
                 return [request['download_link']]
+        elif request['status'] == 'FAILED':
+            if self.log:
+                logging.error("API returned 'job failed'.")
+            raise RuntimeError("API returned 'job failed'")
         else:
-            logging.error("Unknown status <{}> returned by api".format(request['status']))
+            if self.log:
+                logging.error("Unknown status <{}> returned by api".format(request['status']))
             raise ValueError("Unknown status returned by api")
 
     '''
@@ -181,7 +195,8 @@ class coursera:
 
     def download(self, link, location):
 
-        logging.info("Downloading file ({})".format(self.course_slug))
+        if self.log:
+            logging.info("Downloading file ({})".format(self.course_slug))
 
         resp = utils.download_url(link, location)
 
