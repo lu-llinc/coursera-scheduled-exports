@@ -1,8 +1,7 @@
 # Crontab jobs
 
 # Run every 2 weeks on Monday --> for tables
-# TODO: Add mounted gbucket path.
-# TODO: test -m flag
+# TODO: Cron job is currently not running. Try if it is working properly.
 0 07 * * 1 /home/Jasper/anaconda/bin/python 'tables' '/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/' -m
 
 # Run every week on Thursday --> for clickstreams
