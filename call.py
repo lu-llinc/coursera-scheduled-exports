@@ -60,7 +60,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
                 print 'Successful request'
     else:
         if args.verbose:
-            print "Found '{}' request for {} created in the past hour. Resuming that download ... ".format(request_type, course_slug)
+            print "Found '{}' request for {} created in the 5 hours. Resuming that download ... ".format(request_type, course_slug)
     # Create cs interval
     c.create_cs_interval(ndays = args.clickstream_days, interval = args.interval)
     # Check if ready for download
