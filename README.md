@@ -76,6 +76,8 @@ Or you can override the default (download the past 7 days) with any number large
 python call.py 'clickstream' '/users/jasper/desktop/courses.txt' '/users/jasper/tmp' --clickstream_days 14 --verbose
 ```
 
+This is useful if you use a program to schedule downloads, say, every 2 weeks instead of every 7 days.
+
 ### Argument description and help
 
 Execute
