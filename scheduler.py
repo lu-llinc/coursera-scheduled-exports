@@ -219,7 +219,7 @@ class coursera:
             if self.verbose:
                 print 'API returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
             time.sleep(10)
-            if (time_now - datetime.datetime.now()).total_seconds() >= 1800:
+            if (datetime.datetime.now() - time_now).total_seconds() >= 1800:
                 if self.log:
                     logging.error("API request has been returning status 'PENDING' for 30 minutes. Skipping this request.")
                 raise ApiResolve("API request has been returning status 'PENDING' for 30 minutes. Skipping this request.")
@@ -231,7 +231,7 @@ class coursera:
                 print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
             time.sleep(interval)
             # Check
-            if (time_now - datetime.datetime.now()).total_seconds() >= 28800:
+            if (datetime.datetime.now() - time_now).total_seconds() >= 28800:
                 if self.log:
                     logging.error("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
                 raise ApiResolve("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
