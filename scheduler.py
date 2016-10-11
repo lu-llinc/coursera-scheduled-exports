@@ -137,7 +137,7 @@ class coursera:
         # Add info to self
         vals = ERM.to_json()
         self.id_ = vals['id']
-        self.type_ = "TABLE"
+        self.type_ = "TABLES"
         self.metadata = vals["metadata"]
         self.schemaNames = vals["schemaNames"]
 
