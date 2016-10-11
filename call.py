@@ -155,6 +155,8 @@ if __name__=="__main__":
     if args.log:
         logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
                             level=logging.INFO)
+        # Set requests logging so that it doesn't crowd out the log file
+        logging.getLogger("requests").setLevel(logging.WARNING)
 
     # Call
     for courseSlug in courseSlugs:
