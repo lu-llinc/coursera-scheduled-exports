@@ -33,6 +33,7 @@ from courseraresearchexports.models.ExportRequest import ExportRequest
 from courseraresearchexports.models.ClickstreamDownloadLinksRequest import ClickstreamDownloadLinksRequest
 from courseraresearchexports.exports import api
 from courseraresearchexports.exports import utils
+from exceptions import FailedRequest, ApiResolve
 
 '''
 Create a request to the API
