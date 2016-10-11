@@ -214,18 +214,28 @@ class coursera:
         request = api.get(self.id_)[0].to_json()
 
         # If pending, wait for it to jump to in progress or successful.
+        time_now = datetime.datetime.now()
         while request['status'] == 'PENDING':
             if self.verbose:
                 print 'API returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
             time.sleep(10)
             request = api.get(self.id_)[0].to_json()
+            if (time_now - datetime.datetime.now()).total_seconds() >= 1800:
+                if self.log:
+                    logging.error("API request has been returning status 'PENDING' for 30 minutes. Skipping this request.")
+                raise ApiResolve("API request has been returning status 'PENDING' for 30 minutes. Skipping this request.")
         # If in progress, check for every interval.
+        time_now = datetime.datetime.now()
         while request['status'] == 'IN_PROGRESS':
             if self.verbose:
                 print 'API returned {} for job {}. Retrying in {} minutes.'.format(request['status'], self.course_slug, str(interval / 60))
             time.sleep(interval)
             # Check
             request = api.get(self.id_)[0].to_json()
+            if (time_now - datetime.datetime.now()).total_seconds() >= 1800:
+                if self.log:
+                    logging.error("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
+                raise ApiResolve("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
         if request['status'] == 'SUCCESSFUL':
             # if clickstream data, return download links, else return download link for
             if request['exportType'] == 'RESEARCH_EVENTING':
