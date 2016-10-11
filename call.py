@@ -93,7 +93,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
-        store_metadata_file(location, "SUCCESS", meta["course"], meta["course_id"], meta["exportType"],meta["meta"], meta["schema_names"]))
+        store_metadata_file(location, "SUCCESS", meta["course"], meta["course_id"], meta["exportType"],meta["meta"], meta["schema_names"])
 
 '''
 Run file
@@ -159,5 +159,9 @@ if __name__=="__main__":
             coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
         except FailedRequest as e:
             print "Failed to make a request for course {} and export_type {}. You may not have the correct permissions.".format(courseSlug, args.export_type)
+            if args.save_metadata:
+                save_metadata_file(args.location, "FAILED REQUEST", courseSlug, "NONE", "NONE", "NONE", "NONE")
         except ApiResolve as e:
             print "Your request succeeded but the API failed. Returned error '{}'".format(e)
+            if args.save_metadata:
+                save_metadata_file(args.location, "FAILED API", courseSlug, "NONE", "NONE", "NONE", "NONE")
