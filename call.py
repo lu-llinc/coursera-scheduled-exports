@@ -30,6 +30,18 @@ from urlparse import urlparse
 from scheduler import coursera, FailedRequest, ApiResolve
 
 '''
+Store metadata function
+'''
+
+def store_metadata_file(location, status, course, course_id, exportType, meta, schema_names):
+    meta = {"course":course, "course_id":course_id, "exportType":exportType, "meta":meta, "schema_names":schema_names, "status":status}
+    time_now = str(datetime.datetime.now())
+    with open("{}/metadata.txt".format(location), 'a') as inFile:
+        inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["status"].encode, meta["course"].encode("utf8"),
+                                                     meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
+                                                     meta["meta"], meta["schema_names"]))
+
+'''
 Wrapper to download files.
 '''
 
@@ -81,11 +93,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
-        time_now = str(datetime.datetime.now())
-        with open("{}/metadata.txt".format(location), 'a') as inFile:
-            inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["course"].encode("utf8"),
-                                                         meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
-                                                         meta["meta"], meta["schema_names"]))
+        store_metadata_file(location, "SUCCESS", meta["course"], meta["course_id"], meta["exportType"],meta["meta"], meta["schema_names"]))
 
 '''
 Run file
@@ -149,5 +157,7 @@ if __name__=="__main__":
     for courseSlug in courseSlugs:
         try:
             coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
-        except (FailedRequest, ApiResolve) as e:
-            print e
+        except FailedRequest as e:
+            print "Failed to make a request for course {} and export_type {}. You may not have the correct permissions.".format(courseSlug, args.export_type)
+        except ApiResolve as e:
+            print "Your request succeeded but the API failed. Returned error '{}'".format(e)
