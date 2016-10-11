@@ -37,7 +37,7 @@ def store_metadata_file(location, status, course, course_id, exportType, meta, s
     meta = {"course":course, "course_id":course_id, "exportType":exportType, "meta":meta, "schema_names":schema_names, "status":status}
     time_now = str(datetime.datetime.now())
     with open("{}/metadata.txt".format(location), 'a') as inFile:
-        inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["status"].encode, meta["course"].encode("utf8"),
+        inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["status"].encode("utf8"), meta["course"].encode("utf8"),
                                                      meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
                                                      meta["meta"], meta["schema_names"]))
 
