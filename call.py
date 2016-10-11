@@ -27,7 +27,7 @@ import argparse
 import logging
 import datetime
 from urlparse import urlparse
-from scheduler import coursera
+from scheduler import coursera, FailedRequest, ApiResolve
 
 '''
 Wrapper to download files.
@@ -93,8 +93,6 @@ Run file
 
 if __name__=="__main__":
 
-    # NOTE: Set logging up as optional
-
     # Set up parser and add arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("export_type", help="Either one of 'clickstream' or 'tables'", type=str, choices=["clickstream", "tables"])
@@ -145,8 +143,11 @@ if __name__=="__main__":
     # Create logger here!
     if args.log:
         logging.basicConfig(filename = "{}{}".format(args.location, "scheduled_downloads.log"), filemode='a', format='%(asctime)s %(name)s %(levelname)s %(message)s',
-                            level=logging.DEBUG)
+                            level=logging.INFO)
 
     # Call
     for courseSlug in courseSlugs:
-        coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
+        try:
+            coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
+        except (FailedRequest, ApiResolve) as e:
+            print e

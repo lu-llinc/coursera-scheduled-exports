@@ -33,7 +33,16 @@ from courseraresearchexports.models.ExportRequest import ExportRequest
 from courseraresearchexports.models.ClickstreamDownloadLinksRequest import ClickstreamDownloadLinksRequest
 from courseraresearchexports.exports import api
 from courseraresearchexports.exports import utils
-from exceptions import FailedRequest, ApiResolve
+
+'''
+Exceptions
+'''
+
+class FailedRequest(Exception):
+    pass
+
+class ApiResolve(Exception):
+    pass
 
 '''
 Create a request to the API
@@ -93,7 +102,7 @@ class coursera:
             # Log event
             if self.log:
                 logging.error("Cannot fetch course id ({})".format(self.course_slug))
-            raise ValueError("Server returned {}. Check whether course name is correct.".format(str(resp)))
+            raise ApiResolve("Server returned {}. Check whether course name is correct.".format(str(resp)))
         json_data = resp.json()
         # Get courseID
         course_id = json_data["elements"][0]["id"]
@@ -130,7 +139,7 @@ class coursera:
         except: # Find out specific error
             if self.log:
                 logging.error("Request failed ({})".format(self.course_slug))
-            raise ValueError("Failed request")
+            raise FailedRequest("Failed request")
 
         if self.log:
             logging.info("Request successfull ({})".format(self.course_slug))
@@ -178,7 +187,7 @@ class coursera:
         except:
             if self.log:
                 logging.error("Request failed ({})".format(self.course_slug))
-            raise ValueError("Failed request")
+            raise FailedRequest("Failed request")
 
         if self.log:
             logging.info("Request successfull ({})".format(self.course_slug))
@@ -226,11 +235,11 @@ class coursera:
         elif request['status'] == 'FAILED':
             if self.log:
                 logging.error("API returned 'job failed'.")
-            raise RuntimeError("API returned 'job failed'")
+            raise ApiResolve("API returned 'job failed'")
         else:
             if self.log:
                 logging.error("Unknown status <{}> returned by api".format(request['status']))
-            raise ValueError("Unknown status returned by api")
+            raise ApiResolve("Unknown status returned by api")
 
     '''
     Download data
