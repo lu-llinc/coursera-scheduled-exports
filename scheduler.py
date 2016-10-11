@@ -232,7 +232,7 @@ class coursera:
             time.sleep(interval)
             # Check
             request = api.get(self.id_)[0].to_json()
-            if (time_now - datetime.datetime.now()).total_seconds() >= 1800:
+            if (time_now - datetime.datetime.now()).total_seconds() >= 28800:
                 if self.log:
                     logging.error("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
                 raise ApiResolve("API request has been returning status 'IN_PROGRESS' for 8 hours. Skipping this request.")
