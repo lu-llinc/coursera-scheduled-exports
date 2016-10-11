@@ -2,10 +2,10 @@
 
 # Run every 2 weeks on Friday --> for tables
 # TODO: Add "expr `date +\%s` / 604800 \% 2 >/dev/null ||""  for every 2 weeks
-0 1 * * 5 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'tables' '/home/Jasper/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/' --save_metadata --log
+0 1 * * 5 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'tables' '/home/Jasper/tmp/gcs-bucket/courses.txt' '/home/Jasper/tmp/gcs-bucket/' --save_metadata --log
 
 # Run every week on Sunday --> for clickstreams
-0 1 * * 0 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'clickstream' '/home/Jasper/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/' --save_metadata --log
+0 1 * * 0 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'clickstream' '/home/Jasper/tmp/gcs-bucket/courses.txt' '/home/Jasper/tmp/gcs-bucket/' --save_metadata --log
 
 # Run first of every month --> for cleaning of tables
 0 0 1 * * /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/extra/clean.py '/home/Jasper/tmp/gcs-bucket/'
