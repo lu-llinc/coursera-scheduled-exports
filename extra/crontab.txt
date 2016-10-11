@@ -6,3 +6,6 @@
 
 # Run every week on Sunday --> for clickstreams
 * * * * 0 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'clickstream' '/tmp/gcs-bucket/courses.txt' '/tmp/gcs-bucket/' --save_metadata --log
+
+# Run first of every month --> for cleaning of tables
+0 0 1 * * /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/extra/clean.py '/tmp/gcs-bucket/'
