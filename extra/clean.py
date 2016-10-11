@@ -22,9 +22,8 @@ limitations under the License.
 # 07/10/2016
 '''
 
-import sys
 import os
-import datetime
+import argparse
 
 '''
 Exceptions
@@ -63,14 +62,27 @@ class cleaner:
         # Add to self
         self.folders = folders_with_files
 
-    def scope():
+    def scope(self):
         # For each folder, delete oldest
         for fold in self.folders:
             # List files and ignore system files
             f = [file_ for file_ in os.listdir(fold) if not file_.startswith('.')]
             # If length f > files_to_keep
-            if len(f) >= files_to_keep:
+            if len(f) >= self.files_to_keep:
                 # Take out oldest files
-                diff = (len(f) - files_to_keep) - 1
+                diff = (len(f) - self.files_to_keep)
+                #print diff
                 for d in range(0,diff):
-                    os.remove(f[d])
+                    os.remove("{}/{}".format(fold, f[d]))
+
+if __name__=="__main__":
+
+    # Set up parser and add arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("location", help="Base directory in which to look for the data. The program will automatically add the course slug to the folder and download the data there.", type = str)
+    parser.add_argument("--files_to_keep", help="How many files should the program keep? Defaults to 2", type=int)
+    args = parser.parse_args()
+
+    # Run
+    clean = cleaner(args.location)
+    clean.scope()
