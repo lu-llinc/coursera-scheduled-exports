@@ -28,6 +28,7 @@ import json
 import datetime
 import time
 import logging
+import sys
 import courseraresearchexports
 from courseraresearchexports.models.ExportRequest import ExportRequest
 from courseraresearchexports.models.ClickstreamDownloadLinksRequest import ClickstreamDownloadLinksRequest
@@ -137,8 +138,10 @@ class coursera:
         try:
             ERM = api.post(er)[0]
         except: # Find out specific error
+            errors = ' '.join([str(e) for e in sys.exc_info()])
             if self.log:
-                logging.error("Request failed ({})".format(self.course_slug))
+                logging.error("Request failed ({}) with errors {}".format(self.course_slug, errors))
+            print errors
             raise FailedRequest("Failed request")
 
         if self.log:
@@ -185,8 +188,10 @@ class coursera:
         try:
             ERM = api.post(er)[0]
         except:
+            errors = ' '.join([str(e) for e in sys.exc_info()])
             if self.log:
-                logging.error("Request failed ({})".format(self.course_slug))
+                logging.error("Request failed ({}) with errors {}".format(self.course_slug, errors))
+            print errors
             raise FailedRequest("Failed request")
 
         if self.log:

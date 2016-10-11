@@ -58,8 +58,12 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     c.get_course_id()
     if args.verbose:
         print 'Sucessfully fetched course ID'
-    # Check if a request for this course was made in the past 12 hours
-    check = c.catch_download(threshold = 18000, request_type = request_type)
+    # Check if a request for this course was made in the past 5 days (tables) or 1 day (clickstream)
+    if request_type == "tables":
+        threshold = 5 * 86400
+    else:
+        threshold = 1 * 86400
+    check = c.catch_download(threshold = threshold, request_type = request_type)
     # If true, skip request
     if not check or args.force_request:
         # Depending on request type, call tables or clickstream
@@ -71,8 +75,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
             if args.verbose:
                 print 'Successful request'
     else:
-        if args.verbose:
-            print "Found '{}' request for {} created in the 5 hours. Resuming that download ... ".format(request_type, course_slug)
+        print "Found '{}' request for {} created in the past {} days. Resuming that download ... (if you'd like to override this, add '--force_request' to your command.)".format(request_type, course_slug, str(threshold / 86400))
     # Create cs interval
     c.create_cs_interval(ndays = args.clickstream_days, interval = args.interval)
     # Check if ready for download
@@ -158,10 +161,10 @@ if __name__=="__main__":
         try:
             coursera_download(courseSlug, args.export_type, args.location, args.save_metadata)
         except FailedRequest as e:
-            print "Failed to make a request for course {} and export_type {}. You may not have the correct permissions.".format(courseSlug, args.export_type)
+            print "Failed to make a request for course {} and export_type {}. You may not have the correct permissions or you may be requesting too many exports for your course (limited to 1 per hour).".format(courseSlug, args.export_type)
             if args.save_metadata:
-                save_metadata_file(args.location, "FAILED REQUEST", courseSlug, "NONE", "NONE", "NONE", "NONE")
+                store_metadata_file(args.location, "FAILED REQUEST", courseSlug, "NONE", "NONE", "NONE", "NONE")
         except ApiResolve as e:
             print "Your request succeeded but the API failed. Returned error '{}'".format(e)
             if args.save_metadata:
-                save_metadata_file(args.location, "FAILED API", courseSlug, "NONE", "NONE", "NONE", "NONE")
+                store_metadata_file(args.location, "FAILED API", courseSlug, "NONE", "NONE", "NONE", "NONE")
