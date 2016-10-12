@@ -8,4 +8,8 @@
 0 1 * * 0 /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/call.py 'clickstream' '/home/Jasper/tmp/gcs-bucket/courses.txt' '/home/Jasper/tmp/gcs-bucket/' --save_metadata --log
 
 # Run first of every month --> for cleaning of tables
+# NOTE: I use this to ensure that I only have the two latest downloads for each course.
 0 0 1 * * /home/Jasper/anaconda/bin/python /home/Jasper/coursera-scheduled-exports/extra/clean.py '/home/Jasper/tmp/gcs-bucket/'
+
+# NOTE: the command below mounts a google storage bucket at startup.
+@reboot gcsfuse mooc-data /home/Jasper/tmp/gcs-bucket/
