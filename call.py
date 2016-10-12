@@ -57,7 +57,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Fetch course id
     c.get_course_id()
     if args.verbose:
-        print 'Sucessfully fetched course ID'
+        print 'Successfully fetched course ID'
     # Check if a request for this course was made in the past 5 days (tables) or 1 day (clickstream)
     if request_type == "tables":
         threshold = 5 * 86400
