@@ -97,7 +97,7 @@ To get an overview and a description of the arguments.
 
 ### Scheduling downloads
 
-You can use e.g. crontab (linux, [example](https://github.com/JasperHG90/coursera-scheduled-exports-extra/blob/master/crontab.txt) or automator (mac, [example](http://apple.stackexchange.com/questions/59532/create-automator-service-with-a-python-script)) to automate requests every week, month etc.
+You can use e.g. crontab (linux, [example](https://github.com/JasperHG90/coursera-scheduled-exports-extra/blob/master/crontab.txt)) or automator (mac, [example](http://apple.stackexchange.com/questions/59532/create-automator-service-with-a-python-script)) to automate requests every week, month etc.
 
 ### Running the program in a VM or VPS
 
