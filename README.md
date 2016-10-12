@@ -97,11 +97,11 @@ To get an overview and a description of the arguments.
 
 ### Scheduling downloads
 
-You can use e.g. crontab (linux, [example](https://github.com/JasperHG90/coursera-scheduled-exports/blob/master/extra/crontab.txt)) or automator (mac, [example](http://apple.stackexchange.com/questions/59532/create-automator-service-with-a-python-script)) to automate requests every week, month etc.
+You can use e.g. crontab (linux, [example](https://github.com/JasperHG90/coursera-scheduled-exports-extra/blob/master/crontab.txt) or automator (mac, [example](http://apple.stackexchange.com/questions/59532/create-automator-service-with-a-python-script)) to automate requests every week, month etc.
 
 ### Running the program in a VM or VPS
 
-I use this program on a VPS. If you plan to use this program in a Virtual Machine (VM) or Virtual Private Server (VPS), you can use the [bootstrap](https://github.com/JasperHG90/coursera-scheduled-exports/blob/master/extra/bootstrap.sh) file to install all dependencies in one go.
+I use this program on a VPS. If you plan to use this program in a Virtual Machine (VM) or Virtual Private Server (VPS), you can use the [bootstrap](https://github.com/JasperHG90/coursera-scheduled-exports-extra/blob/master/bootstrap.sh) file to install all dependencies in one go.
 
 Because Coursera uses OAuth2 and requires you to authenticate using a browser, you need to do the following: authenticate your account using your own computer. Then, look for the hidden `.coursera` folder in your home directory (e.g. `/home/<user>/.coursera/` for linux) and copy the `.pickle` file to the same folder on your VM/VPS (e.g. `/home/<vps-user-name>/.coursera`). You can now request exports on your VM/VPS.
 
