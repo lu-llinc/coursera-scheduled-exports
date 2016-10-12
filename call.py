@@ -92,7 +92,13 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
             if args.log:
                 logging.info("File {} already exists in target location. Moving on ... ".format(filename))
             continue
-        c.download(link, tloc)
+	try:
+            c.download(link, tloc)
+	except:
+	    if args.verbose:
+                print("Download failed for {}".format("filename"))
+	    if args.log:
+                logging.error("Download failed for {}".format("filename"))
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
