@@ -57,7 +57,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Fetch course id
     c.get_course_id()
     if args.verbose:
-        print 'Sucessfully fetched course ID'
+        print 'Successfully fetched course ID'
     # Check if a request for this course was made in the past 5 days (tables) or 1 day (clickstream)
     if request_type == "tables":
         threshold = 5 * 86400
@@ -99,6 +99,13 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
             if args.log:
                 logging.error("File {} is incomplete. Skipping download of this file. Check if there are days missing in your download folder {}.".format(filename, tloc))
         c.download(link, tloc)
+	try:
+            c.download(link, tloc)
+	except:
+	    if args.verbose:
+                print("Download failed for {}".format("filename"))
+	    if args.log:
+                logging.error("Download failed for {}".format("filename"))
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
