@@ -103,7 +103,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
             c.download(link, tloc)
 	except:
 	    if args.verbose:
-                print("Download failed for {}".format("filename"))
+                print "Download failed for {}".format("filename")
 	    if args.log:
                 logging.error("Download failed for {}".format("filename"))
     # Get metadata and store in file
