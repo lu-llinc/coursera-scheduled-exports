@@ -98,6 +98,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
                 print "Download link leads to incomplete file. Skipping for now."
             if args.log:
                 logging.error("File {} is incomplete. Skipping download of this file. Check if there are days missing in your download folder {}.".format(filename, tloc))
+		continue
         c.download(link, tloc)
 	try:
             c.download(link, tloc)
