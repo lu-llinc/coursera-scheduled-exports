@@ -33,13 +33,13 @@ from scheduler import coursera, FailedRequest, ApiResolve
 Store metadata function
 '''
 
-def store_metadata_file(location, status, course, course_id, exportType, meta, schema_names):
+def store_metadata_file(location, status, course, course_id, exportType, meta, schema_names, files_downloaded):
     meta = {"course":course, "course_id":course_id, "exportType":exportType, "meta":meta, "schema_names":schema_names, "status":status}
     time_now = str(datetime.datetime.now())
     with open("{}/metadata.txt".format(location), 'a') as inFile:
-        inFile.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["status"].encode("utf8"), meta["course"].encode("utf8"),
+        inFile.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(time_now.encode("utf8"), meta["status"].encode("utf8"), meta["course"].encode("utf8"),
                                                      meta["course_id"].encode("utf8"), meta["exportType"].encode("utf8"),
-                                                     meta["meta"], meta["schema_names"]))
+                                                     meta["meta"], meta["schema_names"], files_downloaded.encode("utf8")))
 
 '''
 Wrapper to download files.
@@ -81,6 +81,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Check if ready for download
     links = c.status_export(interval = 300)
     # Download data to destination folder
+    files_downloaded = 0
     for link in links:
         # Check if file exists
         filename = urlparse(link).path.split('/')[-1]
@@ -101,6 +102,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
 		continue
 	try:
             c.download(link, tloc)
+            files_downloaded += 1
 	except:
 	    if args.verbose:
                 print "Download failed for {}".format("filename")
@@ -109,7 +111,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Get metadata and store in file
     if store_metadata:
         meta = c.return_metadata()
-        store_metadata_file(location, "SUCCESS", meta["course"], meta["course_id"], meta["exportType"],meta["meta"], meta["schema_names"])
+        store_metadata_file(location, "SUCCESS", meta["course"], meta["course_id"], meta["exportType"],meta["meta"], meta["schema_names"], str(files_downloaded))
 
 '''
 Run file
@@ -178,8 +180,8 @@ if __name__=="__main__":
         except FailedRequest as e:
             print "Failed to make a request for course {} and export_type {}. You may not have the correct permissions or you may be requesting too many exports for your course (limited to 1 per hour).".format(courseSlug, args.export_type)
             if args.save_metadata:
-                store_metadata_file(args.location, "FAILED REQUEST", courseSlug, "NONE", "NONE", "NONE", "NONE")
+                store_metadata_file(args.location, "FAILED REQUEST", courseSlug, "NONE", "NONE", "NONE", "NONE", "0")
         except ApiResolve as e:
             print "Your request succeeded but the API failed. Returned error '{}'".format(e)
             if args.save_metadata:
-                store_metadata_file(args.location, "FAILED API", courseSlug, "NONE", "NONE", "NONE", "NONE")
+                store_metadata_file(args.location, "FAILED API", courseSlug, "NONE", "NONE", "NONE", "NONE", "0")
