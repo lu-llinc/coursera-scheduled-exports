@@ -92,6 +92,12 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
             if args.log:
                 logging.info("File {} already exists in target location. Moving on ... ".format(filename))
             continue
+        # If incomplete file, skip and notice
+        if "_part_" in filename:
+            if args.verbose:
+                print "Download link leads to incomplete file. Skipping for now."
+            if args.log:
+                logging.error("File {} is incomplete. Skipping download of this file. Check if there are days missing in your download folder {}.".format(filename, tloc))
         c.download(link, tloc)
     # Get metadata and store in file
     if store_metadata:
