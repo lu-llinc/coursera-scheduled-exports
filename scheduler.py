@@ -160,13 +160,13 @@ class coursera:
 
     def create_cs_interval(self, ndays = None, interval = None):
         if ndays != None:
-            self.interval = [str(datetime.date.today() - datetime.timedelta(days=ndays)),
-                        str(datetime.date.today() - datetime.timedelta(days=1))]
+            self.interval = [str(datetime.date.today() - datetime.timedelta(days=(ndays + 1)),
+                        str(datetime.date.today() - datetime.timedelta(days=2))]
         elif interval != None:
             self.interval = interval
         else:
-            self.interval = [str(datetime.date.today() - datetime.timedelta(days=7)),
-                        str(datetime.date.today() - datetime.timedelta(days=1))]
+            self.interval = [str(datetime.date.today() - datetime.timedelta(days=8)),
+                        str(datetime.date.today() - datetime.timedelta(days=2))]
 
     '''
     Request clickstream data
